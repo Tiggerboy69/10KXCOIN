@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XCOIN Lucky Wheel</title>
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -78,11 +78,12 @@
     /* Wheel container & pointer */
     .wheel-container {
       position: relative;
-      display: inline-block;
+      width: 80vw;
+      max-width: 300px;
+      margin: 16px auto;
+      padding: 4px;
       border: 4px solid var(--brand-start);
       border-radius: 50%;
-      padding: 4px;
-      margin-bottom: 16px;
     }
     /* ตัวชี้รางวัล */
     .pointer {
@@ -100,6 +101,8 @@
     }
     #wheel {
       display: block;
+      width: 100%;
+      height: auto;
       background: #fff;
       border-radius: 50%;
     }
@@ -138,7 +141,7 @@
     <!-- Wheel + Pointer -->
     <div class="wheel-container">
       <div class="pointer"></div>
-      <canvas id="wheel" width="400" height="400"></canvas>
+      <canvas id="wheel"></canvas>
     </div>
 
     <!-- Buttons -->
@@ -153,14 +156,13 @@
 
   <!-- Script -->
   <script>
-    // รายชื่อสำหรับสุ่ม (รีเซ็ตทุกครั้ง reload หน้า)
     let names = [
       "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
       "AAAAAA-a120y",
       "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
       "12ID8B-AOF PYY",
       "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
-      "MIANOY-ผอ. Eve รับสมัครตำแหน่งสามี",
+      "MIANOY-ผอ. Eve รับสมัครตำแ่งสามี",
       "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
       "RX6699-Tokyo 🗼"
     ];
@@ -168,14 +170,28 @@
 
     const canvas = document.getElementById("wheel");
     const ctx = canvas.getContext("2d");
-    const radius = canvas.width / 2;
     const spinSound = document.getElementById("spinSound");
     let currentAngle = 0;
     let isSpinning = false;
 
-    // วาดวงล้อ
+    function resizeCanvas() {
+      const size = canvas.parentElement.clientWidth;
+      canvas.width = size;
+      canvas.height = size;
+      drawWheel(currentAngle);
+    }
+
+    window.addEventListener('load', () => {
+      resizeCanvas();
+      liff.init({ liffId: "YOUR_LIFF_ID" })
+        .then(() => { if (!liff.isLoggedIn()) liff.login(); })
+        .catch(console.error);
+    });
+    window.addEventListener('resize', resizeCanvas);
+
     function drawWheel(angle = 0) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const radius = canvas.width / 2;
       ctx.save();
       ctx.translate(radius, radius);
       ctx.rotate(angle);
@@ -190,21 +206,17 @@
         ctx.rotate(i * arc + arc / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#fff";
-        ctx.font = "14px sans-serif";
+        ctx.font = `${Math.floor(radius/10)}px sans-serif`;
         ctx.fillText(names[i], radius - 10, 0);
         ctx.restore();
       }
       ctx.restore();
     }
-    drawWheel();
 
-    // ฟังก์ชัน easing
     function easeOutQuad(t, b, c, d) {
-      t /= d;
-      return -c * t * (t - 2) + b;
+      t /= d; return -c * t * (t - 2) + b;
     }
 
-    // หมุนวงล้อ
     function spinWheel() {
       if (isSpinning || names.length === 0) return;
       isSpinning = true;
@@ -212,12 +224,9 @@
       document.getElementById("result").innerHTML = "";
       document.getElementById("removeBtn").disabled = true;
 
-      // เล่นเสียงหมุน
-      spinSound.load();
-      spinSound.currentTime = 0;
-      spinSound.play().catch(() => {});
+      spinSound.load(); spinSound.currentTime = 0; spinSound.play().catch(() => {});
 
-      const spinTimeTotal  = 4000;  // เวลาในการหมุน (ms)
+      const spinTimeTotal  = 4000;
       const spinAngleStart = Math.random() * 1000 + 500;
       let spinTime = 0, lastAngle = 0;
 
@@ -234,16 +243,14 @@
 
       function finish() {
         drawWheel(currentAngle);
-        const degrees = (currentAngle * 180 / Math.PI) % 360;
-        const arcDeg  = 360 / names.length;
-        const index   = Math.floor((360 - degrees + arcDeg/2) / arcDeg) % names.length;
+        const degrees = (currentAngle * 180/Math.PI) % 360;
+        const arcDeg = 360 / names.length;
+        const index  = Math.floor((360 - degrees + arcDeg/2) / arcDeg) % names.length;
         lastIndex = index;
-
         const pickedName = names[index];
         const prize      = document.getElementById("prizeSelect").value;
         document.getElementById("result").innerHTML =
           `🎉 <strong>${pickedName}</strong> ได้รับ <strong>${prize}</strong>!`;
-
         document.getElementById("removeBtn").disabled = false;
         isSpinning = false;
       }
@@ -251,7 +258,6 @@
       rotate();
     }
 
-    // ลบชื่อที่ได้รับแล้ว (ชั่วคราวในรอบนั้น)
     function removeName() {
       if (lastIndex === null) return;
       names.splice(lastIndex, 1);
@@ -261,11 +267,6 @@
       document.getElementById("result").innerHTML = "";
       document.getElementById("removeBtn").disabled = true;
     }
-
-    // เริ่ม LIFF
-    liff.init({ liffId: "YOUR_LIFF_ID" })
-      .then(() => { if (!liff.isLoggedIn()) liff.login(); })
-      .catch(console.error);
   </script>
 </body>
 </html>
