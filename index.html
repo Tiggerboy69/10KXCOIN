@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>LIFF Wheel with Sound</title>
+  <title>LIFF Wheel with Natural Sound End</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body { text-align: center; font-family: sans-serif; padding: 20px; }
@@ -13,7 +13,7 @@
   </style>
 </head>
 <body>
-  <h2>🎡 วงล้อสุ่มรางวัลลุ้นที่2 XCOIN</h2>
+  <h2>🎡 วงล้อสุ่มชื่อ & รางวัล XCOIN</h2>
 
   <div>
     <label for="prizeSelect">เลือกรางวัลที่ต้องการ:</label>
@@ -26,8 +26,8 @@
     </select>
   </div>
 
-  <!-- เพิ่ม audio element -->
-  <audio id="spinSound" src="XCOIN M.mp3" preload="auto"></audio>
+  <!-- audio element -->
+  <audio id="spinSound" src="xcoin.mp3" preload="auto"></audio>
 
   <canvas id="wheel" width="400" height="400"></canvas>
   <div>
@@ -37,7 +37,6 @@
   <div id="result"></div>
 
   <script>
-    // รายชื่อสุ่ม
     let names = [
       "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
       "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
@@ -79,6 +78,7 @@
       }
       ctx.restore();
     }
+
     drawWheel();
 
     function easeOutQuad(t, b, c, d) {
@@ -93,13 +93,12 @@
       document.getElementById("result").innerHTML = "";
       document.getElementById("removeBtn").disabled = true;
 
-      // เล่นเสียงตั้งแต่เริ่มหมุน
+      // เล่นเสียง
       spinSound.currentTime = 0;
       spinSound.play();
 
-      // ตั้งเวลาหมุนรวม 12 วินาที (12000ms)
-      const spinAngleStart = Math.random() * 2000 + 2000;
-      const spinTimeTotal = 6000;
+      const spinTimeTotal = 4000; // ปรับเวลาได้ตามต้องการ (มิลลิวินาที)
+      const spinAngleStart = Math.random() * 1000 + 500;
       let spinTime = 0;
       let lastAngle = 0;
 
@@ -116,7 +115,6 @@
 
       function finish() {
         drawWheel(currentAngle);
-        // หาดัชนีชื่อที่หมุด
         const degrees = (currentAngle * 180 / Math.PI) % 360;
         const arcDeg = 360 / names.length;
         const index = Math.floor((360 - degrees + arcDeg/2) / arcDeg) % names.length;
@@ -124,13 +122,9 @@
         const pickedName = names[index];
         const prize = document.getElementById("prizeSelect").value;
 
-        // หยุดเสียงถ้าต้องการ
-        setTimeout(() => {
-          spinSound.pause();
-        }, 12000);
-
         document.getElementById("result").innerHTML =
           `🎉 <strong>${pickedName}</strong> ได้รับ <strong>${prize}</strong>!`;
+
         document.getElementById("removeBtn").disabled = false;
         isSpinning = false;
       }
