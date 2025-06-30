@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>LIFF Wheel with Sound</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { text-align: center; font-family: sans-serif; padding: 20px; }
+    canvas { display: block; margin: 20px auto; }
+    #result { font-size: 20px; margin-top: 20px; color: #333; }
+    select, button { font-size: 16px; padding: 8px 12px; margin: 5px; }
+    button:disabled { opacity: 0.5; }
+  </style>
+</head>
+<body>
+  <h2>🎡 วงล้อสุ่มรางวัลลุ้นที่2 XCOIN</h2>
+
+  <div>
+    <label for="prizeSelect">เลือกรางวัลที่ต้องการ:</label>
+    <select id="prizeSelect">
+      <option value="5,000 Coin">รางวัลที่ 1 ‒ 5,000 Coin</option>
+      <option value="3,000 Coin">รางวัลที่ 2 ‒ 3,000 Coin</option>
+      <option value="1,500 Coin">รางวัลที่ 3 ‒ 1,500 Coin</option>
+      <option value="1,000 Coin">รางวัลที่ 4 ‒ 1,000 Coin</option>
+      <option value="500 Coin">รางวัลที่ 5 ‒ 500 Coin</option>
+    </select>
+  </div>
+
+  <!-- เพิ่ม audio element -->
+  <audio id="spinSound" src="XCOIN M.mp3" preload="auto"></audio>
+
+  <canvas id="wheel" width="400" height="400"></canvas>
+  <div>
+    <button onclick="spinWheel()" id="spinBtn">หมุนเลย!</button>
+    <button onclick="removeName()" id="removeBtn" disabled>ลบชื่อที่ได้รับแล้ว</button>
+  </div>
+  <div id="result"></div>
+
+  <script>
+    // รายชื่อสุ่ม
+    let names = [
+      "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
+      "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
+      "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
+      "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
+      "AAAAAA-a120y",
+      "12ID8B-AOF PYY",
+      "MIANOY-ผอ. Eve รับสมัครตำแหน่งสามี",
+      "RX6699-Tokyo 🗼"
+    ];
+    let lastIndex = null;
+
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const radius = canvas.width / 2;
+    const spinSound = document.getElementById("spinSound");
+    let currentAngle = 0;
+    let isSpinning = false;
+
+    function drawWheel(angle = 0) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(radius, radius);
+      ctx.rotate(angle);
+      const arc = 2 * Math.PI / names.length;
+      for (let i = 0; i < names.length; i++) {
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, radius, i * arc, (i + 1) * arc);
+        ctx.fillStyle = (i % 2 === 0) ? "#D32F2F" : "#F44336";
+        ctx.fill();
+        ctx.save();
+        ctx.rotate(i * arc + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#fff";
+        ctx.font = "14px sans-serif";
+        ctx.fillText(names[i], radius - 10, 0);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+    drawWheel();
+
+    function easeOutQuad(t, b, c, d) {
+      t /= d;
+      return -c * t * (t - 2) + b;
+    }
+
+    function spinWheel() {
+      if (isSpinning || names.length === 0) return;
+      isSpinning = true;
+      lastIndex = null;
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("removeBtn").disabled = true;
+
+      // เล่นเสียงตั้งแต่เริ่มหมุน
+      spinSound.currentTime = 0;
+      spinSound.play();
+
+      // ตั้งเวลาหมุนรวม 12 วินาที (12000ms)
+      const spinAngleStart = Math.random() * 2000 + 2000;
+      const spinTimeTotal = 6000;
+      let spinTime = 0;
+      let lastAngle = 0;
+
+      function rotate() {
+        spinTime += 30;
+        if (spinTime >= spinTimeTotal) return finish();
+        const spinAngle = easeOutQuad(spinTime, 0, spinAngleStart, spinTimeTotal);
+        const delta = spinAngle - lastAngle;
+        currentAngle += (delta * Math.PI / 180);
+        lastAngle = spinAngle;
+        drawWheel(currentAngle);
+        setTimeout(rotate, 30);
+      }
+
+      function finish() {
+        drawWheel(currentAngle);
+        // หาดัชนีชื่อที่หมุด
+        const degrees = (currentAngle * 180 / Math.PI) % 360;
+        const arcDeg = 360 / names.length;
+        const index = Math.floor((360 - degrees + arcDeg/2) / arcDeg) % names.length;
+        lastIndex = index;
+        const pickedName = names[index];
+        const prize = document.getElementById("prizeSelect").value;
+
+        // หยุดเสียงถ้าต้องการ
+        setTimeout(() => {
+          spinSound.pause();
+        }, 12000);
+
+        document.getElementById("result").innerHTML =
+          `🎉 <strong>${pickedName}</strong> ได้รับ <strong>${prize}</strong>!`;
+        document.getElementById("removeBtn").disabled = false;
+        isSpinning = false;
+      }
+
+      rotate();
+    }
+
+    function removeName() {
+      if (lastIndex === null) return;
+      names.splice(lastIndex, 1);
+      lastIndex = null;
+      currentAngle = 0;
+      drawWheel();
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("removeBtn").disabled = true;
+    }
+
+    // เริ่ม LIFF
+    liff.init({ liffId: "YOUR_LIFF_ID" })
+      .then(() => { if (!liff.isLoggedIn()) liff.login(); })
+      .catch(err => console.error(err));
+  </script>
+</body>
+</html>
