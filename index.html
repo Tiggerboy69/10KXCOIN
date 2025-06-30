@@ -1,50 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>LIFF Wheel with Natural Sound End</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>XCOIN Lucky Wheel</title>
+  <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body { text-align: center; font-family: sans-serif; padding: 20px; }
-    canvas { display: block; margin: 20px auto; }
-    #result { font-size: 20px; margin-top: 20px; color: #333; }
-    select, button { font-size: 16px; padding: 8px 12px; margin: 5px; }
-    button:disabled { opacity: 0.5; }
+    :root {
+      --brand-start: #D32F2F;
+      --brand-end:   #F44336;
+      --text-light: #FFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: radial-gradient(circle at top center,
+        rgba(243, 244, 246, .8),
+        rgba(243, 244, 246, 1)
+      );
+      color: #333;
+      text-align: center;
+      padding-bottom: 40px;
+    }
+    /* Header Bar */
+    .app-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(90deg, var(--brand-start), var(--brand-end));
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    .app-header h1 {
+      color: var(--text-light);
+      font-size: 20px;
+      font-weight: 600;
+    }
+    /* Main content */
+    main {
+      padding-top: 80px; /* พ้นใต้ header */
+    }
+    .controls {
+      margin: 16px 0;
+    }
+    select, button {
+      font-size: 16px;
+      padding: 10px 16px;
+      margin: 0 8px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform .1s, box-shadow .1s;
+    }
+    select {
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    button {
+      background: var(--brand-end);
+      color: var(--text-light);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    button:disabled {
+      background: #bbb;
+      cursor: not-allowed;
+    }
+    /* Wheel container & pointer */
+    .wheel-container {
+      position: relative;
+      display: inline-block;
+      border: 4px solid var(--brand-start);
+      border-radius: 50%;
+      padding: 4px;
+      margin-bottom: 16px;
+    }
+    /* ตัวชี้รางวัล */
+    .pointer {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 24px solid var(--brand-start);
+      z-index: 10;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    #wheel {
+      display: block;
+      background: #fff;
+      border-radius: 50%;
+    }
+    /* Result text */
+    #result {
+      margin-top: 20px;
+      font-size: 22px;
+      color: var(--brand-start);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    }
   </style>
 </head>
 <body>
-  <h2>🎡 วงล้อสุ่มชื่อ & รางวัล XCOIN</h2>
+  <!-- Header -->
+  <header class="app-header">
+    <h1>XCOIN Lucky Wheel</h1>
+  </header>
 
-  <div>
-    <label for="prizeSelect">เลือกรางวัลที่ต้องการ:</label>
-    <select id="prizeSelect">
-      <option value="5,000 Coin">รางวัลที่ 1 ‒ 5,000 Coin</option>
-      <option value="3,000 Coin">รางวัลที่ 2 ‒ 3,000 Coin</option>
-      <option value="1,500 Coin">รางวัลที่ 3 ‒ 1,500 Coin</option>
-      <option value="1,000 Coin">รางวัลที่ 4 ‒ 1,000 Coin</option>
-      <option value="500 Coin">รางวัลที่ 5 ‒ 500 Coin</option>
-    </select>
-  </div>
+  <!-- Main -->
+  <main>
+    <!-- Controls -->
+    <div class="controls">
+      <label for="prizeSelect">เลือกรางวัลที่ต้องการ:</label>
+      <select id="prizeSelect">
+        <option value="5,000 Coin">รางวัลที่ 1 ‒ 5,000 Coin</option>
+        <option value="3,000 Coin">รางวัลที่ 2 ‒ 3,000 Coin</option>
+        <option value="1,500 Coin">รางวัลที่ 3 ‒ 1,500 Coin</option>
+        <option value="1,000 Coin">รางวัลที่ 4 ‒ 1,000 Coin</option>
+        <option value="500 Coin">รางวัลที่ 5 ‒ 500 Coin</option>
+      </select>
+    </div>
 
-  <!-- audio element -->
-  <audio id="spinSound" src="XCOIN M.mp3" preload="auto"></audio>
+    <!-- Audio for spin -->
+    <audio id="spinSound" src="XCOIN M.mp3" preload="auto"></audio>
 
-  <canvas id="wheel" width="400" height="400"></canvas>
-  <div>
-    <button onclick="spinWheel()" id="spinBtn">หมุนเลย!</button>
-    <button onclick="removeName()" id="removeBtn" disabled>ลบชื่อที่ได้รับแล้ว</button>
-  </div>
-  <div id="result"></div>
+    <!-- Wheel + Pointer -->
+    <div class="wheel-container">
+      <div class="pointer"></div>
+      <canvas id="wheel" width="400" height="400"></canvas>
+    </div>
 
+    <!-- Buttons -->
+    <div class="controls">
+      <button onclick="spinWheel()" id="spinBtn">หมุนเลย!</button>
+      <button onclick="removeName()" id="removeBtn" disabled>ลบชื่อที่ได้รับแล้ว</button>
+    </div>
+
+    <!-- Result -->
+    <div id="result"></div>
+  </main>
+
+  <!-- Script -->
   <script>
+    // รายชื่อสำหรับสุ่ม (รีเซ็ตทุกครั้ง reload หน้า)
     let names = [
       "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
-      "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
-      "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
-      "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
       "AAAAAA-a120y",
+      "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
       "12ID8B-AOF PYY",
+      "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
       "MIANOY-ผอ. Eve รับสมัครตำแหน่งสามี",
+      "WILLY8-🐳🫀วิลลี่Willyฟิลลี่Filly🫀🐳",
       "RX6699-Tokyo 🗼"
     ];
     let lastIndex = null;
@@ -56,6 +173,7 @@
     let currentAngle = 0;
     let isSpinning = false;
 
+    // วาดวงล้อ
     function drawWheel(angle = 0) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save();
@@ -78,14 +196,15 @@
       }
       ctx.restore();
     }
-
     drawWheel();
 
+    // ฟังก์ชัน easing
     function easeOutQuad(t, b, c, d) {
       t /= d;
       return -c * t * (t - 2) + b;
     }
 
+    // หมุนวงล้อ
     function spinWheel() {
       if (isSpinning || names.length === 0) return;
       isSpinning = true;
@@ -93,21 +212,21 @@
       document.getElementById("result").innerHTML = "";
       document.getElementById("removeBtn").disabled = true;
 
-      // เล่นเสียง
+      // เล่นเสียงหมุน
+      spinSound.load();
       spinSound.currentTime = 0;
-      spinSound.play();
+      spinSound.play().catch(() => {});
 
-      const spinTimeTotal = 4000; // ปรับเวลาได้ตามต้องการ (มิลลิวินาที)
+      const spinTimeTotal  = 4000;  // เวลาในการหมุน (ms)
       const spinAngleStart = Math.random() * 1000 + 500;
-      let spinTime = 0;
-      let lastAngle = 0;
+      let spinTime = 0, lastAngle = 0;
 
       function rotate() {
         spinTime += 30;
         if (spinTime >= spinTimeTotal) return finish();
         const spinAngle = easeOutQuad(spinTime, 0, spinAngleStart, spinTimeTotal);
         const delta = spinAngle - lastAngle;
-        currentAngle += (delta * Math.PI / 180);
+        currentAngle += delta * Math.PI / 180;
         lastAngle = spinAngle;
         drawWheel(currentAngle);
         setTimeout(rotate, 30);
@@ -116,12 +235,12 @@
       function finish() {
         drawWheel(currentAngle);
         const degrees = (currentAngle * 180 / Math.PI) % 360;
-        const arcDeg = 360 / names.length;
-        const index = Math.floor((360 - degrees + arcDeg/2) / arcDeg) % names.length;
+        const arcDeg  = 360 / names.length;
+        const index   = Math.floor((360 - degrees + arcDeg/2) / arcDeg) % names.length;
         lastIndex = index;
-        const pickedName = names[index];
-        const prize = document.getElementById("prizeSelect").value;
 
+        const pickedName = names[index];
+        const prize      = document.getElementById("prizeSelect").value;
         document.getElementById("result").innerHTML =
           `🎉 <strong>${pickedName}</strong> ได้รับ <strong>${prize}</strong>!`;
 
@@ -132,6 +251,7 @@
       rotate();
     }
 
+    // ลบชื่อที่ได้รับแล้ว (ชั่วคราวในรอบนั้น)
     function removeName() {
       if (lastIndex === null) return;
       names.splice(lastIndex, 1);
@@ -145,7 +265,7 @@
     // เริ่ม LIFF
     liff.init({ liffId: "YOUR_LIFF_ID" })
       .then(() => { if (!liff.isLoggedIn()) liff.login(); })
-      .catch(err => console.error(err));
+      .catch(console.error);
   </script>
 </body>
 </html>
