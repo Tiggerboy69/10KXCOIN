@@ -1,44 +1,18 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>XCOIN Lucky Wheel</title>
+
   <!-- LIFF SDK -->
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js">
-  function openPopup() {
-  document.getElementById("popup").style.display = "flex";
-  const listEl = document.getElementById("nameList");
-  listEl.innerHTML = "";
-  names.forEach(name => {
-    const li = document.createElement("li");
-    li.textContent = name;
-    listEl.appendChild(li);
-  });
-}
-
-function closePopup() {
-  document.getElementById("popup").style.display = "none";
-}</script>
-
-// เรียกใช้เมื่อโหลดเสร็จ
-window.addEventListener("load", () => {
-  openPopup();
-});
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
   <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Pop-up -->
-<div id="popup" class="popup">
-  <div class="popup-content">
-    <button class="close-btn" onclick="closePopup()">✕</button>
-    <h2>📋 รายชื่อผู้มีสิทธิ์ร่วมกิจกรรม</h2>
-    <ul id="nameList"></ul>
-    <p style="margin-top: 16px; font-size: 14px; color: #444;">
-      กด "หมุนเลย!" เพื่อเริ่มกิจกรรมลุ้นรับรางวัล 🎁
-    </p>
-  </div>
-</div>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
 
   <style>
     :root {
@@ -47,50 +21,6 @@ window.addEventListener("load", () => {
       --text-light: #FFF;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-.popup {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-.popup-content {
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 90%;
-  width: 360px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  position: relative;
-  text-align: left;
-}
-.popup-content h2 {
-  font-size: 20px;
-  color: #D32F2F;
-  margin-bottom: 12px;
-}
-.popup-content ul {
-  padding-left: 20px;
-  font-size: 15px;
-  max-height: 200px;
-  overflow-y: auto;
-}
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #888;
-}
-.close-btn:hover {
-  color: #000;
-}
 
     body {
       font-family: 'Prompt', sans-serif;
@@ -102,6 +32,7 @@ window.addEventListener("load", () => {
       text-align: center;
       padding-bottom: 40px;
     }
+
     /* Header Bar */
     .app-header {
       position: fixed;
@@ -119,6 +50,53 @@ window.addEventListener("load", () => {
       font-size: 20px;
       font-weight: 600;
     }
+
+    /* Pop-up */
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .popup-content {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 90%;
+      width: 360px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      position: relative;
+      text-align: left;
+    }
+    .popup-content h2 {
+      font-size: 20px;
+      color: #D32F2F;
+      margin-bottom: 12px;
+    }
+    .popup-content ul {
+      padding-left: 20px;
+      font-size: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #888;
+    }
+    .close-btn:hover {
+      color: #000;
+    }
+
     /* Main content */
     main {
       padding-top: 80px; /* พ้นใต้ header */
@@ -152,6 +130,7 @@ window.addEventListener("load", () => {
       background: #bbb;
       cursor: not-allowed;
     }
+
     /* Wheel container & pointer */
     .wheel-container {
       position: relative;
@@ -162,7 +141,6 @@ window.addEventListener("load", () => {
       border: 4px solid var(--brand-start);
       border-radius: 50%;
     }
-    /* ตัวชี้รางวัล */
     .pointer {
       position: absolute;
       top: -24px;
@@ -183,6 +161,7 @@ window.addEventListener("load", () => {
       background: #fff;
       border-radius: 50%;
     }
+
     /* Result text */
     #result {
       margin-top: 20px;
@@ -192,11 +171,24 @@ window.addEventListener("load", () => {
     }
   </style>
 </head>
+
 <body>
   <!-- Header -->
   <header class="app-header">
     <h1>XCOIN Lucky Wheel</h1>
   </header>
+
+  <!-- Pop-up รายชื่อ -->
+  <div id="popup" class="popup" style="display: none;">
+    <div class="popup-content">
+      <button class="close-btn" onclick="closePopup()">✕</button>
+      <h2>📋 รายชื่อผู้มีสิทธิ์ร่วมกิจกรรม</h2>
+      <ul id="nameList"></ul>
+      <p style="margin-top: 16px; font-size: 14px; color: #444;">
+        เลือกรางวัล และกด "หมุนเลย!" 🎁
+      </p>
+    </div>
+  </div>
 
   <!-- Main -->
   <main>
@@ -206,8 +198,8 @@ window.addEventListener("load", () => {
       <select id="prizeSelect">
         <option value="5,000 Coin">รางวัลที่ 1 ‒ 5,000 Coin</option>
         <option value="3,000 Coin">รางวัลที่ 2 ‒ 3,000 Coin</option>
-        <option value="1,500 Coin">รางวัลที่ 3 ‒ 1,000 Coin</option>
-        <option value="1,000 Coin">รางวัลที่ 4 ‒ 500 Coin</option>
+        <option value="1,000 Coin">รางวัลที่ 3 ‒ 1,000 Coin</option>
+        <option value="500 Coin">รางวัลที่ 4 ‒ 500 Coin</option>
       </select>
     </div>
 
@@ -230,48 +222,58 @@ window.addEventListener("load", () => {
     <div id="result"></div>
   </main>
 
-  <!-- Script -->
+  <!-- Script รวมทั้งหมด -->
   <script>
+    // รายชื่อผู้ร่วมกิจกรรม
     let names = [
-        "110Z93-🌈 Tippy 🍑😜",
-        "DPI60H-🌏 New_Earth 🌏👹",
-        "MAXXGM-🌲🏔️✨ภูผา✨🌲🏔️",
-        "RX5555-MO",
-        "EPLVF0-ไฟท์",
-        "KABOOM-😎💣🏴‍☠️/</3",
-        "1HO7HH-แค่บังเอิญ",
-        "QKCJ6M-S.jojo",
-        "HKJPVK-จดจำ",
-        "CCAPY9-nongchai",
-        "QGXDFH-KC-CK😈💙🐣",
-        "9UOPPL-บอล",
-        "RXJBJB-🙈1St🙈💦🫟",
-        "POON25-🎃หลายรอบแล้วนะเมิงเนี่ย🎃",
-        "2X3F6G-NatCha 🌈🦖🌱🍞💦🌋⚔️🥤⛑️🖤",
-        "RXITAI-~💊อิไตย่า💊~⚙️🧲🍲🪴🎙️"
+      "110Z93-🌈 Tippy 🍑😜",
+      "DPI60H-🌏 New_Earth 🌏👹",
+      "MAXXGM-🌲🏔️✨ภูผา✨🌲🏔️",
+      "RX5555-MO",
+      "EPLVF0-ไฟท์",
+      "KABOOM-😎💣🏴‍☠️/</3",
+      "1HO7HH-แค่บังเอิญ",
+      "QKCJ6M-S.jojo",
+      "HKJPVK-จดจำ",
+      "CCAPY9-nongchai",
+      "QGXDFH-KC-CK😈💙🐣",
+      "9UOPPL-บอล",
+      "RXJBJB-🙈1St🙈💦🫟",
+      "POON25-🎃หลายรอบแล้วนะเมิงเนี่ย🎃",
+      "2X3F6G-NatCha 🌈🦖🌱🍞💦🌋⚔️🥤⛑️🖤",
+      "RXITAI-~💊อิไตย่า💊~⚙️🧲🍲🪴🎙️"
     ];
     let lastIndex = null;
-
-    const canvas = document.getElementById("wheel");
-    const ctx = canvas.getContext("2d");
-    const spinSound = document.getElementById("spinSound");
     let currentAngle = 0;
     let isSpinning = false;
 
+    // แสดง Popup
+    function openPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "flex";
+      const listEl = document.getElementById("nameList");
+      listEl.innerHTML = "";
+      names.forEach(name => {
+        const li = document.createElement("li");
+        li.textContent = name;
+        listEl.appendChild(li);
+      });
+    }
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+
+    // Canvas & Wheel
+    const canvas  = document.getElementById("wheel");
+    const ctx     = canvas.getContext("2d");
+    const spinSound = document.getElementById("spinSound");
+
     function resizeCanvas() {
       const size = canvas.parentElement.clientWidth;
-      canvas.width = size;
+      canvas.width  = size;
       canvas.height = size;
       drawWheel(currentAngle);
     }
-
-    window.addEventListener('load', () => {
-      resizeCanvas();
-      liff.init({ liffId: "YOUR_LIFF_ID" })
-        .then(() => { if (!liff.isLoggedIn()) liff.login(); })
-        .catch(console.error);
-    });
-    window.addEventListener('resize', resizeCanvas);
 
     function drawWheel(angle = 0) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -279,7 +281,7 @@ window.addEventListener("load", () => {
       ctx.save();
       ctx.translate(radius, radius);
       ctx.rotate(angle);
-      const arc = 2 * Math.PI / names.length;
+      const arc = (2 * Math.PI) / names.length;
       for (let i = 0; i < names.length; i++) {
         ctx.beginPath();
         ctx.moveTo(0, 0);
@@ -290,7 +292,7 @@ window.addEventListener("load", () => {
         ctx.rotate(i * arc + arc / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#fff";
-        ctx.font = `${Math.floor(radius/10)}px sans-serif`;
+        ctx.font = `${Math.floor(radius / 10)}px sans-serif`;
         ctx.fillText(names[i], radius - 10, 0);
         ctx.restore();
       }
@@ -298,7 +300,8 @@ window.addEventListener("load", () => {
     }
 
     function easeOutQuad(t, b, c, d) {
-      t /= d; return -c * t * (t - 2) + b;
+      t /= d;
+      return -c * t * (t - 2) + b;
     }
 
     function spinWheel() {
@@ -308,7 +311,9 @@ window.addEventListener("load", () => {
       document.getElementById("result").innerHTML = "";
       document.getElementById("removeBtn").disabled = true;
 
-      spinSound.load(); spinSound.currentTime = 0; spinSound.play().catch(() => {});
+      spinSound.load();
+      spinSound.currentTime = 0;
+      spinSound.play().catch(() => {});
 
       const spinTimeTotal  = 4000;
       const spinAngleStart = Math.random() * 1000 + 500;
@@ -318,18 +323,18 @@ window.addEventListener("load", () => {
         spinTime += 30;
         if (spinTime >= spinTimeTotal) return finish();
         const spinAngle = easeOutQuad(spinTime, 0, spinAngleStart, spinTimeTotal);
-        const delta = spinAngle - lastAngle;
-        currentAngle += delta * Math.PI / 180;
-        lastAngle = spinAngle;
+        const delta     = spinAngle - lastAngle;
+        currentAngle   += (delta * Math.PI) / 180;
+        lastAngle       = spinAngle;
         drawWheel(currentAngle);
         setTimeout(rotate, 30);
       }
 
       function finish() {
         drawWheel(currentAngle);
-        const degrees = (currentAngle * 180/Math.PI) % 360;
-        const arcDeg = 360 / names.length;
-        const index  = Math.floor((360 - degrees + arcDeg/2) / arcDeg) % names.length;
+        const degrees = (currentAngle * 180 / Math.PI) % 360;
+        const arcDeg  = 360 / names.length;
+        const index   = Math.floor((360 - degrees + arcDeg/2) / arcDeg) % names.length;
         lastIndex = index;
         const pickedName = names[index];
         const prize      = document.getElementById("prizeSelect").value;
@@ -351,6 +356,18 @@ window.addEventListener("load", () => {
       document.getElementById("result").innerHTML = "";
       document.getElementById("removeBtn").disabled = true;
     }
+
+    // Initialize on load
+    window.addEventListener('load', () => {
+      openPopup();
+      resizeCanvas();
+      if (typeof liff !== 'undefined') {
+        liff.init({ liffId: "YOUR_LIFF_ID" })
+          .then(() => { if (!liff.isLoggedIn()) liff.login(); })
+          .catch(console.error);
+      }
+    });
+    window.addEventListener('resize', resizeCanvas);
   </script>
 </body>
 </html>
