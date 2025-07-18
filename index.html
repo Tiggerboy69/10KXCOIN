@@ -6,6 +6,26 @@
   <title>XCOIN Lucky Wheel</title>
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  function openPopup() {
+  document.getElementById("popup").style.display = "flex";
+  const listEl = document.getElementById("nameList");
+  listEl.innerHTML = "";
+  names.forEach(name => {
+    const li = document.createElement("li");
+    li.textContent = name;
+    listEl.appendChild(li);
+  });
+}
+
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
+}
+
+// เรียกใช้เมื่อโหลดเสร็จ
+window.addEventListener("load", () => {
+  openPopup();
+});
+
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
   <!-- Pop-up -->
